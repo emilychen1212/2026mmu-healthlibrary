@@ -3,7 +3,8 @@
  * 馬偕醫學大學圖書館 × 飛資得醫學資訊
  *
  * 部署步驟見 README-game.md。
- * 第一次使用：在 Apps Script 編輯器選擇函式 setup → 執行，會建立 records、config 工作表。
+ * 第一次被呼叫（或打開 Web App 網址）時會自動建立 records、config 工作表；也可手動執行 setup。
+ * 工作人員 PIN 請填在 config 工作表 STAFF_PIN 的 B 欄（至少 4 碼，建議 6 碼以上）；未填時現場模式一律無法登入。
  *
  * API：前端以 POST（Content-Type: text/plain）送 JSON，用 action 區分
  *   submit     寫入一局紀錄；通過時由後端產生不重複的兌換碼
@@ -45,7 +46,8 @@ function doPost(e) {
 }
 
 function doGet() {
-  return json_({ ok: true, service: 'mmu-healthlibrary-game' });
+  setup();
+  return json_({ ok: true, service: 'mmu-healthlibrary-game', sheets: 'ready' });
 }
 
 /* ---------------- 第一次設定 ---------------- */
@@ -64,8 +66,8 @@ function setup() {
   if (!cfg) cfg = ss.insertSheet('config');
   if (cfg.getLastRow() === 0) {
     cfg.appendRow(['key', 'value', '說明']);
-    cfg.appendRow(['STAFF_PIN', '請改成6位數以上', '擺攤現場模式的工作人員 PIN']);
     cfg.getRange('B2').setNumberFormat('@');
+    cfg.getRange(2, 1, 1, 3).setValues([['STAFF_PIN', '', '← 在 B 欄填工作人員 PIN（至少 4 碼，建議 6 碼以上）；空白時現場模式無法登入']]);
   }
 }
 
@@ -191,7 +193,11 @@ function getStaffPin_() {
   const sh = sheet_('config');
   const vals = sh.getDataRange().getValues();
   for (let i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim() === 'STAFF_PIN') return String(vals[i][1]).trim();
+    if (String(vals[i][0]).trim() === 'STAFF_PIN') {
+      const pin = String(vals[i][1]).trim();
+      if (pin.length >= 4) return pin;
+      break;
+    }
   }
   throw new Error('STAFF_PIN_NOT_SET');
 }
@@ -203,8 +209,8 @@ function ss_() {
 }
 
 function sheet_(name) {
-  const sh = ss_().getSheetByName(name);
-  if (!sh) throw new Error('SHEET_MISSING_' + name + '（請先執行 setup）');
+  let sh = ss_().getSheetByName(name);
+  if (!sh) { setup(); sh = ss_().getSheetByName(name); }
   return sh;
 }
 

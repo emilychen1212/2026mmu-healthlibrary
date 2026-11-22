@@ -208,7 +208,7 @@
    設定區：上線前主要改這裡
    ========================================================= */
 const CONFIG = {
-  GAS_URL: "",            // 填 GAS Web App 網址（.../exec）；空白 = 本機測試模式（資料存在這個瀏覽器的 localStorage）
+  GAS_URL: "https://script.google.com/macros/s/AKfycbwU-Zom5UvJfoxFC7QzMoTH8jNWovjr6pI6GOd7T5ZNjajDlgUjtDH0AHzVMUJUL0yH4w/exec", // GAS Web App 網址（.../exec）；空白 = 本機測試模式（資料存在這個瀏覽器的 localStorage）
   HOME_COUNT: 7,          // 在家模式每局題數
   BOOTH_COUNT: 5,         // 現場模式每局題數
   BOOTH_SECONDS: 60,      // 現場模式限時（秒）
@@ -350,6 +350,7 @@ function errorBox(msg, key){
 }
 function netMsg(e){
   if (e && e.server && e.message === "PIN_INVALID") return "工作人員 PIN 已失效，請重新登入現場模式。";
+  if (e && e.server && e.message === "STAFF_PIN_NOT_SET") return "後端尚未設定工作人員 PIN，請到試算表 config 工作表的 STAFF_PIN 填入（至少 4 碼）。";
   if (e && e.server) return "伺服器回應錯誤（" + esc(e.message) + "），請稍後再試。";
   return "網路連線不穩，請確認網路後再試一次。";
 }

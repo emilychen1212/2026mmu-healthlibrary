@@ -18,7 +18,7 @@ const SHEET_ID = '';
 // 必須與前端 game.html 的 CONFIG 一致
 const HOME_COUNT = 7;
 const BOOTH_COUNT = 5;
-const PASS_RATE = 0.7;
+const PASS_RATE = 0.8;
 
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // 排除 0 O 1 I L
 const HEADERS = ['時間戳記', '模式', '姓名', '學校', '科系', '學號', 'Email', '答對數', '總題數',

@@ -71,12 +71,15 @@ PIN 只存在後端，不會出現在網頁原始碼裡。
 | 欄位 | 說明 |
 |---|---|
 | `id` | 題號，不可重複（畫面顯示 FIG 01） |
-| `book` | 正確答案的書籍 id：`coa` `eca` `grant` `gh` `ahfc` `rubin` `sch` `pharm` |
+| `book` | 正確答案的書籍 id：`coa` `eca` `gaa` `grant` `gh` `ahfc` `rubin` `lwwa`（對照見 `game-data.js` 的 `BOOKS`） |
 | `cap` | 圖說，不要寫出書名 |
 | `img` | 圖片路徑；留空 `""` 會顯示佔位圖 |
 | `link` | Health Library 原圖頁網址（學生要點進去才看得到書名） |
 
-**圖片建議規格：寬 800px、WebP、每張 < 150KB、比例 4:3。** 檔名 `fig01.webp` … `fig20.webp`，放在 `images/game/`。
+**圖片建議規格：WebP、每張 < 150KB，寬 520–800px，比例不限（畫面會完整顯示整張圖，不會裁切）。** 檔名 `fig01.webp` … `fig20.webp`，放在 `images/game/`。
+
+每題只顯示 **3 本書**：正確答案＋從其他書隨機抽 2 本，每局都不同（數量在 `game.html` 的 `CONFIG.OPTION_COUNT`）。
+原始題目總表 `遊戲題目.xlsx` 與原圖 `f*.jpeg` 放在本機 `images/game/`，**不上傳 GitHub**（總表等於答案表）。
 
 題庫可以多於 20 題，每局會從全部題目隨機抽。
 若修改每局題數（`HOME_COUNT`／`BOOTH_COUNT`），`gas/Code.gs` 上方的同名設定也要一起改並重新部署。

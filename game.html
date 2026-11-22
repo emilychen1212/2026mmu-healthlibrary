@@ -385,7 +385,7 @@ function shell(inner, anim){
       <span class="tag ${MODE === "booth" ? "booth" : ""}">${MODE === "booth" ? "🎪 擺攤現場模式" : "🏠 在家模式"}</span>
     </header>
     <main class="${anim === "none" ? "" : "screen"}">${inner}</main>
-    <footer>馬偕醫學大學圖書館 × 飛資得醫學資訊</footer>
+    <footer>主辦　馬偕醫學大學圖書館<br>協辦　飛資得醫學資訊股份有限公司<br>聯絡活動窗口　陳小姐　<a href="tel:0226582223,113" style="color:inherit">02-26582223 轉113</a></footer>
     ${LOCAL ? `<div class="localnote">本機測試模式・資料暫存於此瀏覽器</div>` : ""}`;
 }
 function render(html, anim){ app.innerHTML = shell(html, anim); window.scrollTo(0, 0); }

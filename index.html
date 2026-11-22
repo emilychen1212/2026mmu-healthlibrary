@@ -130,6 +130,14 @@
   .eyebrow::before{content:"";width:18px;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--blue-500),var(--green-400))}
   h2{font-size:clamp(24px,3.6vw,32px);color:var(--blue-900);font-weight:900;margin:6px 0 12px}
   .sub{color:var(--muted);max-width:640px}
+  .db-link{margin-top:16px;font-size:13.5px;text-align:right}
+  .db-link a{color:var(--blue-700);font-weight:700;text-decoration:none;border-bottom:1.5px dashed var(--blue-300);padding-bottom:1px;transition:color .2s,border-color .2s}
+  .db-link a:hover{color:var(--green-600);border-bottom-color:var(--green-400)}
+  .db-link .arrow{display:inline-block;transition:transform .3s var(--spring)}
+  .db-link a:hover .arrow{transform:translateX(4px)}
+  .btn .dice{display:inline-block;transition:transform .5s var(--spring)}
+  .btn:hover .dice{transform:rotate(-20deg) scale(1.15)}
+  .btn.rolling .dice{animation:roll .5s ease-in-out}
   .bg-blue{background:linear-gradient(180deg,rgba(220,237,251,.0),rgba(220,237,251,.75) 20%,rgba(220,237,251,.75) 80%,rgba(220,237,251,0))}
   .bg-green{background:linear-gradient(180deg,rgba(225,242,207,0),rgba(225,242,207,.8) 20%,rgba(225,242,207,.8) 80%,rgba(225,242,207,0))}
   .sdeco{position:absolute;border-radius:28%;pointer-events:none;opacity:.5;animation:float 9s ease-in-out infinite}
@@ -281,7 +289,7 @@
     </div>
     <div class="cta">
       <a class="btn btn-main" id="formBtn" href="#" aria-disabled="true">作答表單即將開放</a>
-      <a class="btn btn-ghost" id="dbBtn" href="https://ermg.mmu.edu.tw/user/login/?next=/er/geter/DB000000284/" target="_blank" rel="noopener">先逛逛資料庫 <span class="arrow">→</span></a>
+      <a class="btn btn-ghost" id="randomBtn" href="#shelf"><span class="dice">🎲</span>隨機挑書看看 <span class="arrow">→</span></a>
     </div>
    </div>
     <aside class="gift tilt" aria-label="活動獎品">
@@ -328,6 +336,7 @@
         <h3>圖片匯出</h3><p>書中圖表可直接匯出至 PPT，報告備課更省時</p>
       </div>
     </div>
+    <p class="db-link reveal"><a id="dbBtn" href="https://ermg.mmu.edu.tw/user/login/?next=/er/geter/DB000000284/" target="_blank" rel="noopener">先逛逛資料庫 <span class="arrow">→</span></a></p>
   </div>
 </section>
 
@@ -525,6 +534,28 @@
     // 書櫃：幫我挑一本
     const pickBtn = $("#pickBtn"), bookEls = $$("#shelfGrid .book");
     let lastPick = -1;
+    // banner「隨機挑書看看」：捲到書櫃並隨機挑一本（沒有 JS 時就單純跳到 #shelf）
+    const randomBtn = $("#randomBtn");
+    if (randomBtn && pickBtn) randomBtn.addEventListener("click", e => {
+      e.preventDefault();
+      randomBtn.classList.remove("rolling"); void randomBtn.offsetWidth; randomBtn.classList.add("rolling");
+      $$("#shelf .reveal").forEach(el => el.classList.add("in"));
+      const shelf = $("#shelf");
+      if (reduced) { shelf.scrollIntoView(); pickBtn.click(); return; }
+      // 先捲到書櫃，捲動停下來後才挑書，讓同學看得到書彈跳
+      let done = false, idle;
+      const go = () => { if (done) return; done = true; clearTimeout(idle); window.removeEventListener("scroll", onMove); pickBtn.click(); };
+      const arrived = () => {
+        const top = shelf.getBoundingClientRect().top;
+        const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+        return Math.abs(top) < 120 || atBottom;
+      };
+      const onMove = () => { clearTimeout(idle); idle = setTimeout(() => { if (arrived()) go(); }, 140); };
+      window.addEventListener("scroll", onMove, {passive:true});
+      shelf.scrollIntoView({behavior:"smooth", block:"start"});
+      onMove();
+      setTimeout(go, 3500);   // 保險：最多 3.5 秒一定會挑書
+    });
     if (pickBtn) pickBtn.addEventListener("click", () => {
       let i; do { i = Math.floor(Math.random() * bookEls.length); } while (i === lastPick && bookEls.length > 1);
       lastPick = i;

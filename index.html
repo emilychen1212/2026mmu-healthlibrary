@@ -290,14 +290,15 @@
   const CONFIG = {
     status: "活動即將開跑",          // 開跑後改成「活動進行中」
     period: "",                      // 例："2026/11/16 – 12/18"
-    formUrl: ""                      // 填入 Google 表單連結後，按鈕自動開放
+    formUrl: "game.html"             // 作答按鈕連結（圖鑑配對碰遊戲）；清空則按鈕顯示「即將開放」
   };
   /* ======================================= */
   document.getElementById("statusText").textContent = CONFIG.status;
   if (CONFIG.period) document.getElementById("period").textContent = CONFIG.period;
   const fb = document.getElementById("formBtn");
   if (CONFIG.formUrl) {
-    fb.href = CONFIG.formUrl; fb.target = "_blank"; fb.rel = "noopener";
+    fb.href = CONFIG.formUrl;
+    if (/^https?:/.test(CONFIG.formUrl)) { fb.target = "_blank"; fb.rel = "noopener"; }
     fb.removeAttribute("aria-disabled"); fb.textContent = "立即開始作答 →";
   } else {
     fb.addEventListener("click", e => e.preventDefault());

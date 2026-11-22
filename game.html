@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>圖鑑配對碰｜Health Library 基礎醫學探索挑戰</title>
+<meta name="description" content="馬偕醫學大學圖書館 × 飛資得醫學｜Health Library 圖鑑配對碰">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1f3a5f; --navy-2:#2c4f7c; --navy-soft:#e8eef6;
+    --orange:#f28c38; --orange-soft:#fff1e4; --orange-ink:#c4661a;
+    --bg:#f6f8fb; --card:#ffffff; --text:#22303f; --muted:#5f6e80;
+    --ok:#2f9e6e; --ok-soft:#e6f6ee; --ng:#d9534f; --ng-soft:#fde3e2;
+    --warn:#e0a100; --warn-soft:#fff6d6;
+    --line:#dde4ee; --r:18px;
+    --spring:cubic-bezier(.34,1.56,.64,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:480px;margin:0 auto;padding:14px 16px 40px;min-height:100vh}
+
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .brand{font-weight:700;color:var(--navy);font-size:14px;text-decoration:none;display:flex;align-items:center;gap:6px}
+  .brand .x{color:var(--orange);font-weight:900}
+  .tag{font-size:12px;padding:3px 11px;border-radius:99px;background:var(--navy-soft);color:var(--navy);font-weight:700;white-space:nowrap}
+  .tag.booth{background:var(--orange-soft);color:var(--orange-ink)}
+  footer{text-align:center;font-size:12px;color:var(--muted);margin-top:22px}
+  .localnote{font-size:11px;color:#9aa7b6;text-align:center;margin-top:6px}
+
+  .card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:0 4px 18px rgba(31,58,95,.07);margin-bottom:14px}
+  h1{font-size:26px;color:var(--navy);line-height:1.3;margin-bottom:8px;font-weight:900}
+  h2{font-size:18px;color:var(--navy);margin-bottom:10px;font-weight:900}
+  p.muted{color:var(--muted);font-size:14px}
+  .center{text-align:center}
+  .hidden{display:none!important}
+
+  .hero{background:var(--navy);color:#fff;border-radius:var(--r);padding:26px 20px;margin-bottom:14px;position:relative;overflow:hidden}
+  .hero h1{color:#fff;position:relative}
+  .hero .dot{position:absolute;border-radius:50%;background:var(--orange);opacity:.9}
+  .hero p{color:#d7e2f0;font-size:14px;position:relative}
+  .hero.orange{background:var(--orange)}
+  .hero.orange p{color:#fff3e6}
+  .steps{list-style:none;counter-reset:s}
+  .steps li{counter-increment:s;padding:7px 0 7px 40px;position:relative;font-size:15px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:7px;width:28px;height:28px;border-radius:50%;background:var(--orange-soft);color:var(--orange-ink);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px}
+
+  /* ---------- buttons: squash & bounce ---------- */
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:14px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;background:var(--orange);color:#fff;
+       box-shadow:0 4px 0 rgba(0,0,0,.08);transition:transform .32s var(--spring),box-shadow .2s,background .2s,opacity .2s;-webkit-tap-highlight-color:transparent;text-align:center;text-decoration:none}
+  .btn:active:not(:disabled){transform:scale(.95,.9);box-shadow:0 1px 0 rgba(0,0,0,.08);transition-duration:.08s}
+  @media(hover:hover){.btn:hover:not(:disabled){transform:translateY(-2px)}}
+  .btn.sec{background:var(--navy-soft);color:var(--navy);box-shadow:none}
+  .btn.navy{background:var(--navy)}
+  .btn.small{display:inline-block;width:auto;padding:8px 18px;font-size:14px}
+  .btn:disabled{background:#c9d2de;color:#fff;cursor:not-allowed;box-shadow:none}
+  .btn + .btn{margin-top:10px}
+  .btn.glow:not(:disabled){animation:breathe 1.9s ease-in-out infinite}
+  .btn.nudge{animation:nudge 2.4s ease-in-out .6s infinite}
+  .btn.loading{pointer-events:none;opacity:.8}
+  .btn.loading::after{content:"";display:inline-block;width:14px;height:14px;margin-left:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .7s linear infinite}
+
+  label{display:block;font-size:14px;font-weight:700;margin:12px 0 6px}
+  label .req{color:var(--orange)}
+  input[type=text],input[type=email],input[type=password]{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:#fff;color:var(--text);transition:border-color .2s,box-shadow .2s}
+  input:focus{outline:none;border-color:var(--navy-2);box-shadow:0 0 0 3px rgba(44,79,124,.12)}
+  .consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);margin:16px 0 6px;font-weight:400;cursor:pointer}
+  .consent input{margin-top:4px;width:18px;height:18px;flex-shrink:0;accent-color:var(--orange)}
+  .err{color:var(--ng);font-size:13px;margin:6px 0;min-height:20px}
+
+  /* ---------- question ---------- */
+  .progress{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .bar{flex:1;height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),#f6a961);border-radius:99px;transition:width .6s var(--spring)}
+  .pnum{font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap;display:flex;align-items:center;gap:3px}
+  .pnum .flip{display:inline-block;min-width:1ch;text-align:center;animation:flipNum .4s ease-out both}
+  .timer{font-size:13px;font-weight:900;color:var(--orange-ink);background:var(--orange-soft);padding:3px 11px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .timer.low{background:var(--ng-soft);color:var(--ng)}
+  .timer.bump{animation:bump .3s var(--spring)}
+
+  .qcard{animation:popUp .48s var(--spring) both}
+  .figure{border-radius:14px;overflow:hidden;background:var(--navy-soft);aspect-ratio:4/3}
+  .figure img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .45s ease}
+  .figure img.loaded{opacity:1}
+  .cap{font-size:13.5px;color:var(--muted);margin:10px 0 12px}
+  .cap b{color:var(--navy)}
+
+  .golink{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:2px dashed var(--navy-2);color:var(--navy);font-weight:700;font-size:15px;text-decoration:none;margin-bottom:16px;background:#fff;transition:background .25s,border-color .25s}
+  .golink:not(.visited){animation:wiggle 3s ease-in-out 1.2s infinite}
+  .golink.visited{border-style:solid;background:var(--navy-soft);padding-right:92px;justify-content:flex-start;padding-left:16px}
+  .stamp{position:absolute;right:10px;top:50%;margin-top:-14px;height:28px;padding:0 8px;border:2px solid var(--ok);color:var(--ok);border-radius:8px;font-size:12px;font-weight:900;display:flex;align-items:center;background:rgba(255,255,255,.85);transform:rotate(-12deg);animation:stamp .42s var(--spring) both;pointer-events:none}
+
+  .q{font-size:15px;font-weight:900;margin-bottom:10px;color:var(--navy)}
+  .books{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .book{position:relative;border:2px solid var(--line);border-radius:14px;background:#fff;padding:10px 8px;cursor:pointer;display:flex;gap:8px;align-items:center;text-align:left;font:inherit;font-size:12.5px;line-height:1.35;color:var(--text);
+        transition:border-color .2s,background .2s,opacity .25s,transform .3s var(--spring);animation:optIn .34s ease-out backwards;animation-delay:calc(var(--i,0) * 40ms + 140ms);-webkit-tap-highlight-color:transparent}
+  .book .cv{width:30px;height:42px;border-radius:4px 6px 6px 4px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:center;color:#fff;font-size:9px;font-weight:700;padding-bottom:3px;box-shadow:inset 3px 0 0 rgba(0,0,0,.18)}
+  .book:active:not(:disabled){transform:scale(.96)}
+  .book.sel{border-color:var(--orange);background:var(--orange-soft);box-shadow:0 0 0 3px rgba(242,140,56,.18)}
+  .book.dim{opacity:.55}
+  .book.bounce{animation:selBounce .38s var(--spring) both}
+  .book.right{border-color:var(--ok);background:var(--ok-soft);opacity:1}
+  .book.wrong{border-color:var(--ng);background:var(--ng-soft);opacity:1}
+  .book.pulse{animation:pulseOk .6s ease-out both}
+  .book.reveal{animation:reveal .5s ease-out .25s both}
+  .book.shake{animation:shake .42s ease-in-out both}
+  .book:disabled{cursor:default}
+  .okpop{position:absolute;right:-8px;top:-10px;width:28px;height:28px;border-radius:50%;background:var(--ok);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:15px;animation:pop .42s var(--spring) both;box-shadow:0 3px 8px rgba(47,158,110,.35)}
+  .tip{background:var(--orange-soft);border-radius:12px;padding:11px 13px;font-size:13.5px;margin-top:12px;color:#8a4a12;animation:slideIn .32s ease-out both}
+  .tip b{color:var(--navy)}
+  .tip.ok b{color:var(--ok)} .tip.ng b{color:var(--ng)}
+  .nav{margin-top:4px}
+
+  /* ---------- results ---------- */
+  .score{font-size:52px;font-weight:900;color:var(--navy);text-align:center;line-height:1.1;font-variant-numeric:tabular-nums;display:inline-block}
+  .score small{font-size:18px;color:var(--muted);font-weight:700}
+  .score.wobble{animation:wobble .55s ease-in-out .5s both}
+  .rlist{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0;perspective:600px}
+  .rlist span{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;animation:flipIn .4s ease-out both;animation-delay:calc(var(--i) * 80ms + 200ms)}
+  .rlist .o{background:var(--ok-soft);color:var(--ok)} .rlist .x{background:var(--ng-soft);color:var(--ng)}
+
+  .cert{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border-radius:var(--r);padding:26px 20px 22px;text-align:center;position:relative;overflow:hidden;margin-bottom:14px;box-shadow:0 10px 30px rgba(31,58,95,.25)}
+  .cert .cdot{position:absolute;width:120px;height:120px;border-radius:50%;background:var(--orange);opacity:.22;right:-34px;top:-34px}
+  .cert .cdot.b{width:60px;height:60px;left:-18px;bottom:-18px;right:auto;top:auto;opacity:.18}
+  .medal{width:70px;height:70px;border-radius:50%;background:var(--orange);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 0 0 6px rgba(242,140,56,.25);animation:medalDrop .56s var(--spring) .1s both}
+  .cert h2{color:#fff;font-size:21px;margin-bottom:2px}
+  .cert .name{font-size:15.5px;margin:2px 0 14px;color:#d7e2f0}
+  .cert .clabel{font-size:13px;color:#d7e2f0}
+  .code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:30px;font-weight:800;letter-spacing:3px;background:#fff;color:var(--navy);border-radius:14px;padding:10px;margin:8px 0 10px;min-height:62px;display:flex;align-items:center;justify-content:center}
+  .code .pending{font-family:"Noto Sans TC",sans-serif;font-size:15px;letter-spacing:0;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:8px}
+  .code .caret{display:inline-block;width:3px;height:30px;background:var(--orange);margin-left:2px;animation:blink .7s steps(1) infinite}
+  .spin{display:inline-block;width:16px;height:16px;border:2.5px solid var(--orange);border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+  .cert .meta{font-size:12px;color:#b9c8dc}
+  .shot{border:2px dashed var(--orange);border-radius:14px;padding:12px;text-align:center;font-size:14px;color:#8a4a12;background:var(--orange-soft);margin-bottom:14px}
+
+  .errbox{background:var(--ng-soft);color:#9b2c2a;border-radius:14px;padding:12px 14px;font-size:14px;margin-bottom:14px;animation:shake .42s ease-in-out both}
+  .errbox p{margin-bottom:8px}
+  .errbox .btn{background:var(--ng);color:#fff}
+  .sendnote{font-size:12.5px;color:var(--muted);text-align:center;margin-top:-4px;margin-bottom:12px}
+
+  /* ---------- redeem ---------- */
+  .rres{margin-top:14px;padding:16px;border-radius:14px;font-size:14px;animation:slideIn .3s ease-out both}
+  .rres.ok{background:var(--ok-soft);color:#1d6b49;text-align:center}
+  .rres.ng{background:var(--ng-soft);color:#9b2c2a}
+  .rres.warn{background:var(--warn-soft);color:#7a5600;border:2px solid #f3cf55;animation:shake .5s ease-in-out both}
+  .rres b.big{display:block;font-size:17px;margin-bottom:4px}
+  .check{width:84px;height:84px;display:block;margin:0 auto 8px}
+  .check circle{stroke-dasharray:240;stroke-dashoffset:240;animation:draw .45s ease-out forwards}
+  .check path{stroke-dasharray:60;stroke-dashoffset:60;animation:draw .3s ease-out .4s forwards}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:var(--navy-soft);border-radius:14px;padding:12px;animation:popUp .4s var(--spring) both;animation-delay:calc(var(--i) * 60ms)}
+  .stat b{display:block;font-size:26px;color:var(--navy);font-weight:900;line-height:1.2}
+  .stat span{font-size:12.5px;color:var(--muted)}
+  .plist p{font-size:13px;border-bottom:1px solid var(--line);padding:7px 0}
+  .plist .done{color:var(--ok);font-weight:700}
+  .logout{display:block;margin:14px auto 0;background:none;border:none;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+
+  /* ---------- screen transition ---------- */
+  .screen{animation:screenIn .38s ease-out both}
+  .shake{animation:shake .42s ease-in-out both}
+
+  @keyframes screenIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+  @keyframes popUp{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:none}}
+  @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes optIn{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
+  @keyframes selBounce{0%{transform:scale(1)}40%{transform:scale(1.07)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+  @keyframes breathe{0%,100%{box-shadow:0 4px 0 rgba(0,0,0,.08),0 0 0 0 rgba(242,140,56,.5)}50%{box-shadow:0 4px 0 rgba(0,0,0,.08),0 0 0 9px rgba(242,140,56,0)}}
+  @keyframes nudge{0%,30%,100%{transform:translateY(0)}8%{transform:translateY(-7px)}16%{transform:translateY(0)}22%{transform:translateY(-3px)}}
+  @keyframes wiggle{0%,84%,100%{transform:rotate(0)}87%{transform:rotate(-1.6deg)}90%{transform:rotate(1.6deg)}93%{transform:rotate(-1deg)}96%{transform:rotate(1deg)}}
+  @keyframes stamp{from{opacity:0;transform:scale(2.2) rotate(-24deg)}70%{opacity:1;transform:scale(.92) rotate(-12deg)}to{opacity:1;transform:scale(1) rotate(-12deg)}}
+  @keyframes flipNum{from{opacity:0;transform:rotateX(90deg) translateY(-6px)}to{opacity:1;transform:none}}
+  @keyframes bump{0%{transform:scale(1.28)}100%{transform:scale(1)}}
+  @keyframes pulseOk{0%{box-shadow:0 0 0 0 rgba(47,158,110,.55);transform:scale(1)}40%{transform:scale(1.05)}100%{box-shadow:0 0 0 16px rgba(47,158,110,0);transform:scale(1)}}
+  @keyframes reveal{0%{box-shadow:0 0 0 0 rgba(47,158,110,.5)}100%{box-shadow:0 0 0 12px rgba(47,158,110,0)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+  @keyframes pop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+  @keyframes flipIn{from{opacity:0;transform:rotateY(90deg)}to{opacity:1;transform:none}}
+  @keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}50%{transform:rotate(4deg)}75%{transform:rotate(-2deg)}}
+  @keyframes medalDrop{from{opacity:0;transform:translateY(-70px) scale(1.7) rotate(-25deg)}65%{opacity:1;transform:translateY(4px) scale(.94) rotate(4deg)}to{opacity:1;transform:none}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes blink{50%{opacity:0}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  /* 使用者關閉動態效果：全部改為簡單淡入 */
+  @media (prefers-reduced-motion: reduce){
+    .screen,.shake,.qcard,.book,.book.bounce,.book.pulse,.book.reveal,.book.shake,.okpop,.tip,.rlist span,.medal,.stamp,.rres,.rres.warn,.errbox,.stat,.pnum .flip,.score.wobble{animation:fadeIn .2s ease backwards!important;animation-delay:0s!important}
+    .golink:not(.visited),.btn.glow:not(:disabled),.btn.nudge,.timer.bump{animation:none!important}
+    .bar i{transition:width .2s ease}
+    .btn,.book{transition:background .2s,border-color .2s,opacity .2s}
+    .btn:active:not(:disabled),.book:active:not(:disabled){transform:none}
+    .stamp{transform:rotate(-12deg)}
+    .check circle,.check path{stroke-dashoffset:0;animation:none}
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script src="game-data.js"></script>
+<script>
+/* =========================================================
+   設定區：上線前主要改這裡
+   ========================================================= */
+const CONFIG = {
+  GAS_URL: "",            // 填 GAS Web App 網址（.../exec）；空白 = 本機測試模式（資料存在這個瀏覽器的 localStorage）
+  HOME_COUNT: 7,          // 在家模式每局題數
+  BOOTH_COUNT: 5,         // 現場模式每局題數
+  BOOTH_SECONDS: 60,      // 現場模式限時（秒）
+  PASS_RATE: 0.7,         // 通過門檻（需答對 Math.ceil(題數 × 0.7) 題）
+  SCHOOL_DEFAULT: "馬偕醫學大學",
+  LOCAL_TEST_PIN: "1212"  // 只在 GAS_URL 空白（本機測試）時使用；正式 PIN 存在後端 config 工作表
+};
+
+/* =========================================================
+   工具
+   ========================================================= */
+const LOCAL = !CONFIG.GAS_URL;
+const REDUCED = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const app = $("#app");
+const bookById = id => BOOKS.find(b => b.id === id);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad2 = n => String(n).padStart(2, "0");
+const fmtTime = d => `${d.getFullYear()}/${pad2(d.getMonth()+1)}/${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+const fmtIso = s => { const d = new Date(s); return isNaN(d) ? esc(s) : fmtTime(d); };
+const needToPass = n => Math.ceil(n * CONFIG.PASS_RATE);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+function restart(el, cls){ if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+function normCode(raw){
+  let c = String(raw || "").toUpperCase().replace(/\s+/g, "");
+  if (!c) return "";
+  if (c.startsWith("MMU-")) return c;
+  if (c.startsWith("MMU") && c.length === 7) return "MMU-" + c.slice(3);
+  return "MMU-" + c;
+}
+
+function placeholderImg(q){
+  // 佔位圖：只顯示圖號，不透露書名
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#e8eef6"/>
+    <circle cx="320" cy="70" r="46" fill="#f28c38" opacity=".85"/>
+    <circle cx="80" cy="240" r="70" fill="#1f3a5f" opacity=".12"/>
+    <text x="200" y="140" text-anchor="middle" font-size="44" font-weight="700" fill="#1f3a5f" font-family="sans-serif">FIG ${pad2(q.id)}</text>
+    <text x="200" y="185" text-anchor="middle" font-size="18" fill="#6b7a8c" font-family="sans-serif">圖片佔位（之後替換）</text>
+  </svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
+/* =========================================================
+   資料層
+   - GAS_URL 有值：呼叫 Google Apps Script（text/plain 送 JSON，避免 CORS preflight）
+   - GAS_URL 空白：本機 localStorage（邏輯與後端相同，方便測試）
+   ========================================================= */
+const LocalDB = {
+  key: "mmuhl_game_records",
+  all(){ try { return JSON.parse(localStorage.getItem(this.key) || "[]"); } catch(e){ return []; } },
+  save(list){ try { localStorage.setItem(this.key, JSON.stringify(list)); } catch(e){} },
+  genCode(list){
+    const cs = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // 排除 0 O 1 I L
+    let code;
+    do { code = "MMU-"; for (let i = 0; i < 4; i++) code += cs[Math.floor(Math.random() * cs.length)]; }
+    while (list.some(r => r.code === code));
+    return code;
+  },
+  submit(rec){
+    const list = this.all();
+    const dup = list.find(r => r.rid === rec.rid);
+    if (dup) return {ok:true, passed:dup.passed, code:dup.code};
+    const passed = rec.mode === "home" && rec.score >= needToPass(rec.total);
+    const code = passed ? this.genCode(list) : "";
+    list.push({...rec, passed, code, time:new Date().toISOString(), redeemed:false, redeemedAt:""});
+    this.save(list);
+    return {ok:true, passed, code};
+  },
+  checkPin(pin){ if (pin !== CONFIG.LOCAL_TEST_PIN) { const e = new Error("PIN_INVALID"); e.server = true; throw e; } },
+  verifyPin(pin){ return {ok:true, valid: pin === CONFIG.LOCAL_TEST_PIN}; },
+  redeem(pin, code){
+    this.checkPin(pin);
+    const list = this.all();
+    const r = list.find(x => x.code === code && x.passed);
+    if (!r) return {ok:true, status:"notfound"};
+    const info = rr => ({name:rr.name, dept:rr.dept, sid:rr.sid, score:rr.score, total:rr.total, redeemedAt:rr.redeemedAt});
+    if (r.redeemed) return {ok:true, status:"used", rec:info(r)};
+    r.redeemed = true; r.redeemedAt = new Date().toISOString();
+    this.save(list);
+    return {ok:true, status:"ok", rec:info(r)};
+  },
+  stats(pin){
+    this.checkPin(pin);
+    const list = this.all();
+    const home = list.filter(r => r.mode === "home"), passed = home.filter(r => r.passed);
+    return {ok:true,
+      homePlays: home.length, passCount: passed.length,
+      uniquePass: new Set(passed.map(r => r.sid)).size,
+      redeemed: passed.filter(r => r.redeemed).length,
+      boothPlays: list.filter(r => r.mode === "booth").length,
+      passList: passed.map(r => ({code:r.code, name:r.name, dept:r.dept, sid:r.sid, score:r.score, total:r.total, redeemed:r.redeemed, time:r.time}))};
+  }
+};
+
+async function gas(action, data){
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 20000);
+  try {
+    const res = await fetch(CONFIG.GAS_URL, {
+      method: "POST",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify({action, ...data}),
+      signal: ctrl.signal
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const j = await res.json();
+    if (!j.ok) { const e = new Error(j.error || "SERVER_ERROR"); e.server = true; throw e; }
+    return j;
+  } finally { clearTimeout(t); }
+}
+
+// 本機模式也延遲一下，讓「產生中」等狀態看得到、行為與正式版一致
+const localCall = async fn => { await wait(350); return fn(); };
+const Api = {
+  submit:    rec       => LOCAL ? localCall(() => LocalDB.submit(rec))        : gas("submit", {record: rec}),
+  verifyPin: pin       => LOCAL ? localCall(() => LocalDB.verifyPin(pin))     : gas("verifyPin", {pin}),
+  redeem:    (pin, c)  => LOCAL ? localCall(() => LocalDB.redeem(pin, c))     : gas("redeem", {pin, code: c}),
+  stats:     pin       => LOCAL ? localCall(() => LocalDB.stats(pin))         : gas("stats", {pin})
+};
+
+/* 尚未成功寫入後端的紀錄先存這裡，成功後移除；下次開頁會自動補送（後端以局 ID 防重複） */
+const Outbox = {
+  key: "mmuhl_game_outbox",
+  list(){ try { return JSON.parse(localStorage.getItem(this.key) || "[]"); } catch(e){ return []; } },
+  set(l){ try { localStorage.setItem(this.key, JSON.stringify(l)); } catch(e){} },
+  add(rec){ const l = this.list().filter(r => r.rid !== rec.rid); l.push(rec); this.set(l); },
+  remove(rid){ this.set(this.list().filter(r => r.rid !== rid)); },
+  async send(rec){ const r = await Api.submit(rec); this.remove(rec.rid); return r; },
+  async flush(){ for (const rec of this.list()) { try { await this.send(rec); } catch(e){ return; } } }
+};
+
+const RETRY = {};
+function errorBox(msg, key){
+  return `<div class="errbox"><p>⚠️ ${msg}</p><button class="btn small" onclick="RETRY['${key}']()">重試</button></div>`;
+}
+function netMsg(e){
+  if (e && e.server && e.message === "PIN_INVALID") return "工作人員 PIN 已失效，請重新登入現場模式。";
+  if (e && e.server) return "伺服器回應錯誤（" + esc(e.message) + "），請稍後再試。";
+  return "網路連線不穩，請確認網路後再試一次。";
+}
+
+/* =========================================================
+   狀態與畫面
+   ========================================================= */
+const MODE = new URLSearchParams(location.search).get("mode") === "booth" ? "booth" : "home";
+let S = {player:null, qs:[], opts:[], idx:0, answers:[], visited:{}, timer:null, left:0, pin:"", finished:false, lastSet:""};
+try { S.pin = sessionStorage.getItem("mmuhl_pin") || ""; } catch(e){}
+
+function shell(inner, anim){
+  const brand = MODE === "home"
+    ? `<a class="brand" href="index.html">← Health Library <span class="x">×</span> 飛資得</a>`
+    : `<div class="brand">Health Library <span class="x">×</span> 飛資得</div>`;
+  return `<header class="top">${brand}
+      <span class="tag ${MODE === "booth" ? "booth" : ""}">${MODE === "booth" ? "🎪 擺攤現場模式" : "🏠 在家模式"}</span>
+    </header>
+    <main class="${anim === "none" ? "" : "screen"}">${inner}</main>
+    <footer>馬偕醫學大學圖書館 × 飛資得醫學資訊</footer>
+    ${LOCAL ? `<div class="localnote">本機測試模式・資料暫存於此瀏覽器</div>` : ""}`;
+}
+function render(html, anim){ app.innerHTML = shell(html, anim); window.scrollTo(0, 0); }
+
+function countUp(el, to, dur = 520){
+  if (!el) return;
+  if (REDUCED || to === 0) { el.textContent = to; return; }
+  const t0 = performance.now();
+  const step = now => {
+    const p = Math.min(1, (now - t0) / dur);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function burst(){
+  if (REDUCED || typeof window.confetti !== "function") return;
+  const colors = ["#f28c38", "#1f3a5f", "#ffd2a6", "#2c4f7c", "#ffffff"];
+  confetti({particleCount:90, spread:75, startVelocity:42, origin:{y:.32}, colors, disableForReducedMotion:true});
+  setTimeout(() => {
+    confetti({particleCount:45, angle:60, spread:55, origin:{x:0, y:.65}, colors, disableForReducedMotion:true});
+    confetti({particleCount:45, angle:120, spread:55, origin:{x:1, y:.65}, colors, disableForReducedMotion:true});
+  }, 200);
+}
+function resultGrid(results){
+  return `<div class="rlist">${results.map((r, i) => `<span class="${r ? "o" : "x"}" style="--i:${i}">${r ? "○" : "✕"}</span>`).join("")}</div>`;
+}
+
+/* =========================================================
+   在家模式
+   ========================================================= */
+function homeIntro(){
+  render(`
+    <div class="hero">
+      <span class="dot" style="width:96px;height:96px;right:-22px;top:-22px"></span>
+      <span class="dot" style="width:24px;height:24px;right:76px;top:62px;opacity:.6"></span>
+      <h1>圖鑑配對碰</h1>
+      <p>每張圖都藏在 Health Library 的某一本書裡。<br>點進去看看，把圖配對到正確的書！</p>
+    </div>
+    <div class="card">
+      <h2>怎麼玩？</h2>
+      <ol class="steps">
+        <li>填寫基本資料</li>
+        <li>每局隨機 ${CONFIG.HOME_COUNT} 張圖，點「前往原圖」找出它來自哪本書</li>
+        <li>答對 ${Math.round(CONFIG.PASS_RATE * 100)}% 以上即獲抽獎資格＋兌換碼</li>
+        <li>截圖兌換碼，到圖書館擺攤現場換小禮物 🎁</li>
+      </ol>
+      <p class="muted" style="margin-top:8px">💡 需在校內網路或透過圖書館 VPN 才能開啟原圖。沒過關可以無限重玩，每局題目都不同！</p>
+    </div>
+    <button class="btn glow" onclick="homeForm()">開始挑戰</button>
+  `);
+}
+
+function homeForm(){
+  const p = S.player || {};
+  render(`
+    <div class="card">
+      <h2>填寫參加資料</h2>
+      <p class="muted">資料僅用於本次活動抽獎與兌獎聯繫。</p>
+      <label for="f_name">姓名 <span class="req">*</span></label>
+      <input type="text" id="f_name" value="${esc(p.name)}" autocomplete="name">
+      <label for="f_school">學校 <span class="req">*</span></label>
+      <input type="text" id="f_school" value="${esc(p.school || CONFIG.SCHOOL_DEFAULT)}">
+      <label for="f_dept">科系 <span class="req">*</span></label>
+      <input type="text" id="f_dept" value="${esc(p.dept)}" placeholder="例：醫學系">
+      <label for="f_sid">學號 <span class="req">*</span></label>
+      <input type="text" id="f_sid" value="${esc(p.sid)}" autocapitalize="characters" autocomplete="off">
+      <label for="f_email">Email <span class="req">*</span></label>
+      <input type="email" id="f_email" value="${esc(p.email)}" autocomplete="email" placeholder="得獎通知將寄至此信箱">
+      <label class="consent"><input type="checkbox" id="f_ok" ${p.name ? "checked" : ""}>
+        <span>我同意主辦單位（馬偕醫學大學圖書館、飛資得醫學資訊）蒐集上述個人資料，僅用於本活動之抽獎、得獎通知與兌獎核對，活動結束後依規定刪除。</span></label>
+      <div class="err" id="f_err"></div>
+      <button class="btn glow" onclick="submitForm()">進入遊戲</button>
+    </div>
+  `);
+}
+
+function submitForm(){
+  const v = id => $(id).value.trim();
+  const p = {name:v("#f_name"), school:v("#f_school"), dept:v("#f_dept"), sid:v("#f_sid").toUpperCase(), email:v("#f_email")};
+  const err = $("#f_err");
+  const fail = msg => { err.textContent = msg; restart(err, "shake"); };
+  if (!p.name || !p.school || !p.dept || !p.sid || !p.email) return fail("請填寫所有必填欄位");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return fail("Email 格式不正確");
+  if (!$("#f_ok").checked) return fail("請勾選個資同意");
+  S.player = p;
+  startGame(CONFIG.HOME_COUNT);
+}
+
+/* =========================================================
+   遊戲核心（兩種模式共用）
+   ========================================================= */
+function startGame(n){
+  // 每局隨機抽題；重玩時避免抽到和上一局完全相同的組合
+  let qs, key, tries = 0;
+  do { qs = shuffle(BANK).slice(0, n); key = qs.map(q => q.id).sort((a, b) => a - b).join(","); }
+  while (key === S.lastSet && BANK.length > n && ++tries < 20);
+  S.lastSet = key;
+  S.qs = qs;
+  S.opts = qs.map(() => shuffle(BOOKS.map(b => b.id)));   // 每題選項順序本局固定
+  S.idx = 0; S.answers = new Array(n).fill(null); S.visited = {};
+  S.rid = uid(); S.finished = false; S.barPct = 0;
+  clearInterval(S.timer);
+  if (MODE === "booth"){
+    S.left = CONFIG.BOOTH_SECONDS;
+    S.timer = setInterval(tick, 1000);
+  }
+  showQ();
+}
+
+function tick(){
+  S.left--;
+  const t = $("#timer");
+  if (t){
+    t.querySelector("b").textContent = Math.max(0, S.left);
+    if (S.left <= 10){ t.classList.add("low"); restart(t, "bump"); }
+  }
+  if (S.left <= 0) finish();
+}
+
+function golinkInner(visited){
+  return visited ? `🔍 已開啟原圖・再看一次<span class="stamp">✓ 已查看</span>` : `🔍 前往 Health Library 看原圖`;
+}
+
+function showQ(){
+  const q = S.qs[S.idx], n = S.qs.length, sel = S.answers[S.idx];
+  const booth = MODE === "booth";
+  const locked = booth && sel !== null;
+  render(`
+    <div class="progress">
+      <span class="pnum">第 <b class="flip">${S.idx + 1}</b> / ${n} 題</span>
+      <div class="bar"><i id="bar" style="width:${S.barPct}%"></i></div>
+      ${booth ? `<span class="timer ${S.left <= 10 ? "low" : ""}" id="timer">⏱ <b>${Math.max(0, S.left)}</b>s</span>` : ""}
+    </div>
+    <div class="card qcard">
+      <div class="figure"><img src="${esc(q.img || placeholderImg(q))}" alt="題目圖片 FIG ${pad2(q.id)}" onload="this.classList.add('loaded')" onerror="this.onerror=null;this.src=placeholderImg(S.qs[S.idx])"></div>
+      <div class="cap"><b>FIG ${pad2(q.id)}</b>｜${esc(q.cap)}</div>
+      <a class="golink ${S.visited[q.id] ? "visited" : ""}" id="golink" href="${esc(q.link || "#")}" target="_blank" rel="noopener" onclick="markVisit(${q.id})">${golinkInner(S.visited[q.id])}</a>
+      <div class="q">這張圖出自哪一本書？</div>
+      <div class="books">
+        ${S.opts[S.idx].map((id, i) => { const b = bookById(id);
+          let cls = "";
+          if (locked){ cls = id === q.book ? "right" : id === sel ? "wrong" : "dim"; }
+          else if (sel) cls = id === sel ? "sel" : "dim";
+          return `<button class="book ${cls}" style="--i:${i}" data-id="${id}" ${locked ? "disabled" : ""} onclick="pick('${id}')">
+            <span class="cv" style="background:${b.color}">${esc(b.abbr)}</span><span>${esc(b.short)}</span></button>`;
+        }).join("")}
+      </div>
+      <div id="feedback">${locked ? boothTip(sel === q.book, q) : ""}</div>
+    </div>
+    <div class="nav">
+      <button class="btn" id="nextBtn" ${sel === null ? "disabled" : ""} onclick="next()">${S.idx === n - 1 ? (booth ? "看結果" : "送出作答") : "下一題"}</button>
+      ${(!booth && S.idx > 0) ? `<button class="btn sec" onclick="prev()">上一題</button>` : ""}
+    </div>
+  `, "none");
+  const img = $(".figure img"); if (img && img.complete && img.naturalWidth) img.classList.add("loaded");
+  requestAnimationFrame(() => requestAnimationFrame(setBar));
+}
+
+function setBar(){
+  const n = S.qs.length, done = S.answers.filter(a => a !== null).length;
+  S.barPct = done / n * 100;
+  const bar = $("#bar"); if (bar) bar.style.width = S.barPct + "%";
+}
+
+function markVisit(id){
+  if (S.visited[id]) return;
+  S.visited[id] = true;
+  const a = $("#golink");
+  if (a){ a.classList.add("visited"); a.innerHTML = golinkInner(true); }
+}
+
+function pick(id){
+  if (S.finished) return;
+  if (MODE === "booth") return boothPick(id);
+  S.answers[S.idx] = id;
+  $$(".book").forEach(b => {
+    const on = b.dataset.id === id;
+    b.classList.toggle("sel", on);
+    b.classList.toggle("dim", !on);
+    b.classList.remove("bounce");
+    if (on) restart(b, "bounce");
+  });
+  $("#nextBtn").disabled = false;
+  setBar();
+}
+
+function boothTip(ok, q){
+  return `<div class="tip ${ok ? "ok" : "ng"}">${ok ? "<b>✅ 答對了！</b>" : "<b>❌ 正確答案是</b> " + esc(bookById(q.book).short)}<br>💡 ${esc(BOOTH_TIPS[S.idx % BOOTH_TIPS.length])}</div>`;
+}
+
+function boothPick(id){
+  if (S.answers[S.idx] !== null) return;
+  const q = S.qs[S.idx], ok = id === q.book;
+  S.answers[S.idx] = id;
+  $$(".book").forEach(b => {
+    const bid = b.dataset.id;
+    b.disabled = true;
+    if (bid === q.book){
+      b.classList.add("right", ok ? "pulse" : "reveal");
+      if (ok) b.insertAdjacentHTML("beforeend", `<span class="okpop">✓</span>`);
+    } else if (bid === id){
+      b.classList.add("wrong", "shake");
+    } else b.classList.add("dim");
+  });
+  $("#feedback").innerHTML = boothTip(ok, q);
+  $("#nextBtn").disabled = false;
+  setBar();
+}
+
+function prev(){ if (S.idx > 0){ S.idx--; showQ(); } }
+function next(){ if (S.finished) return; if (S.idx < S.qs.length - 1){ S.idx++; showQ(); } else finish(); }
+
+function finish(){
+  if (S.finished) return;
+  S.finished = true;
+  clearInterval(S.timer);
+  const n = S.qs.length;
+  const results = S.qs.map((q, i) => S.answers[i] === q.book);
+  const correct = results.filter(Boolean).length;
+  const base = {rid:S.rid, score:correct, total:n, qids:S.qs.map(q => q.id).join(","), visited:Object.keys(S.visited).length};
+  if (MODE === "booth"){
+    const rec = {...base, mode:"booth", sid:S.player.sid, school:S.player.school};
+    Outbox.add(rec);
+    boothResult(rec, results, S.left <= 0);
+    sendQuiet(rec);
+    return;
+  }
+  const rec = {...base, mode:"home", ...S.player};
+  Outbox.add(rec);
+  const passed = correct >= needToPass(n);
+  homeResult(rec, results, passed);
+  passed ? sendForCode(rec) : sendQuiet(rec);
+}
+
+/* 通過：等後端回傳兌換碼；失敗時證書保留、顯示重試 */
+async function sendForCode(rec){
+  const codeEl = $("#code"), errEl = $("#codeErr");
+  if (!codeEl) return;
+  errEl.innerHTML = "";
+  codeEl.innerHTML = `<span class="pending"><i class="spin"></i>兌換碼產生中…</span>`;
+  try {
+    const r = await Outbox.send(rec);
+    if (!$("#code")) return;
+    if (r.code) typeCode(r.code);
+    else codeEl.innerHTML = `<span class="pending">成績未通過後端核對，請洽工作人員</span>`;
+  } catch(e){
+    if (!$("#code")) return;
+    codeEl.innerHTML = `<span class="pending">兌換碼尚未產生</span>`;
+    RETRY.code = () => sendForCode(rec);
+    errEl.innerHTML = errorBox("兌換碼還沒產生成功。" + netMsg(e) + "<br>你的通過紀錄不會消失，請按「重試」。", "code");
+  }
+}
+
+function typeCode(code){
+  const el = $("#code");
+  if (REDUCED){ el.textContent = code; return; }
+  el.innerHTML = `<span id="tw"></span><i class="caret"></i>`;
+  const tw = $("#tw"); let i = 0;
+  const step = () => {
+    if (!$("#tw")) return;
+    tw.textContent = code.slice(0, ++i);
+    if (i < code.length) setTimeout(step, 65);
+    else setTimeout(() => { const c = el.querySelector(".caret"); if (c) c.remove(); }, 900);
+  };
+  step();
+}
+
+/* 未通過／現場：背景寫入，不擋住畫面；失敗才顯示重試 */
+async function sendQuiet(rec){
+  const box = $("#sendState");
+  if (box) box.innerHTML = "";
+  try { await Outbox.send(rec); }
+  catch(e){
+    const b = $("#sendState");
+    if (!b) return;
+    RETRY.quiet = () => sendQuiet(rec);
+    b.innerHTML = errorBox("這局紀錄還沒送出。" + netMsg(e), "quiet");
+  }
+}
+
+function homeResult(rec, results, passed){
+  if (passed){
+    render(`
+      <div class="cert">
+        <span class="cdot"></span><span class="cdot b"></span>
+        <div class="medal">🏅</div>
+        <h2>通過認證！</h2>
+        <div class="name">${esc(rec.name)}｜${esc(rec.dept)}</div>
+        <div class="clabel">專屬兌換碼</div>
+        <div class="code" id="code"></div>
+        <div class="meta">答對 ${rec.score} / ${rec.total}・${fmtTime(new Date())}</div>
+        <div class="meta" style="margin-top:4px">Health Library 基礎醫學探索挑戰</div>
+      </div>
+      <div id="codeErr"></div>
+      <div class="shot">📸 <b>請截圖此畫面！</b><br>到圖書館擺攤現場出示，即可兌換小禮物<br>（您也已獲得抽獎資格）</div>
+      <button class="btn sec" onclick="homeIntro()">回首頁</button>
+    `);
+    setTimeout(burst, 250);
+  } else {
+    render(`
+      <div class="card center">
+        <h2>差一點點！</h2>
+        <div class="score wobble"><span id="scoreNum">0</span><small> / ${rec.total}</small></div>
+        <p class="muted">需答對 ${needToPass(rec.total)} 題才能通過</p>
+        ${resultGrid(results)}
+        <p class="muted">💡 每張圖都點進 Health Library 看看書名，就不會錯囉！</p>
+      </div>
+      <div id="sendState"></div>
+      <button class="btn nudge" onclick="startGame(CONFIG.HOME_COUNT)">再玩一次（換一組新題目）</button>
+      <button class="btn sec" onclick="homeIntro()">回首頁</button>
+    `);
+    countUp($("#scoreNum"), rec.score);
+  }
+}
+
+/* =========================================================
+   擺攤現場模式
+   ========================================================= */
+function boothPin(){
+  render(`
+    <div class="card">
+      <h2>工作人員驗證</h2>
+      <p class="muted">現場模式僅供工作人員操作。</p>
+      <label for="pin">PIN 碼</label>
+      <input type="password" id="pin" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter')checkPin()">
+      <div class="err" id="pin_err"></div>
+      <button class="btn navy" id="pinBtn" onclick="checkPin()">進入</button>
+      ${LOCAL ? `<p class="muted" style="margin-top:10px;font-size:12px">（本機測試 PIN：${esc(CONFIG.LOCAL_TEST_PIN)}）</p>` : ""}
+    </div>
+  `);
+  setTimeout(() => { const i = $("#pin"); if (i) i.focus(); }, 50);
+}
+async function checkPin(){
+  const pin = $("#pin").value.trim(), err = $("#pin_err"), btn = $("#pinBtn");
+  if (!pin){ err.textContent = "請輸入 PIN 碼"; restart(err, "shake"); return; }
+  btn.classList.add("loading"); err.textContent = "";
+  try {
+    const r = await Api.verifyPin(pin);
+    if (r.valid){
+      S.pin = pin;
+      try { sessionStorage.setItem("mmuhl_pin", pin); } catch(e){}
+      boothMenu();
+    } else {
+      btn.classList.remove("loading");
+      err.textContent = "PIN 碼錯誤"; restart($("#pin"), "shake");
+      $("#pin").select();
+    }
+  } catch(e){
+    btn.classList.remove("loading");
+    err.textContent = netMsg(e);
+  }
+}
+function boothLogout(){
+  S.pin = ""; try { sessionStorage.removeItem("mmuhl_pin"); } catch(e){}
+  boothPin();
+}
+function pinExpired(e){
+  if (e && e.server && e.message === "PIN_INVALID"){ boothLogout(); setTimeout(() => { const er = $("#pin_err"); if (er) er.textContent = "PIN 已失效，請重新輸入"; }, 0); return true; }
+  return false;
+}
+
+function boothMenu(){
+  if (!S.pin) return boothPin();
+  render(`
+    <div class="hero orange">
+      <span class="dot" style="width:96px;height:96px;right:-22px;top:-22px;background:var(--navy);opacity:.25"></span>
+      <h1>現場 ${CONFIG.BOOTH_SECONDS} 秒挑戰</h1>
+      <p>${CONFIG.BOOTH_COUNT} 張圖・限時 ${CONFIG.BOOTH_SECONDS} 秒・邊玩邊認識 Health Library</p>
+    </div>
+    <button class="btn glow" onclick="boothStart()">🎮 開始現場挑戰</button>
+    <button class="btn navy" onclick="redeemPage()">🎁 兌換碼核銷</button>
+    <button class="btn sec" onclick="boothStats()">📊 活動數據</button>
+    <button class="logout" onclick="boothLogout()">登出工作人員</button>
+  `);
+}
+
+function boothStart(){
+  render(`
+    <div class="card">
+      <h2>現場挑戰</h2>
+      <p class="muted">只需留學號，方便統計參與人數。</p>
+      <label for="b_sid">學號 <span class="req">*</span></label>
+      <input type="text" id="b_sid" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')boothGo()">
+      <div class="err" id="b_err"></div>
+      <button class="btn glow" onclick="boothGo()">開始計時！</button>
+      <button class="btn sec" onclick="boothMenu()">返回</button>
+    </div>
+  `);
+  setTimeout(() => { const i = $("#b_sid"); if (i) i.focus(); }, 50);
+}
+function boothGo(){
+  const sid = $("#b_sid").value.trim().toUpperCase();
+  if (!sid){ const e = $("#b_err"); e.textContent = "請輸入學號"; restart(e, "shake"); return; }
+  S.player = {sid, school:CONFIG.SCHOOL_DEFAULT};
+  startGame(CONFIG.BOOTH_COUNT);
+}
+
+function boothResult(rec, results, timeUp){
+  render(`
+    <div class="card center">
+      <h2>${timeUp ? "⏰ 時間到！" : "🎉 挑戰完成！"}</h2>
+      <div class="score"><span id="scoreNum">0</span><small> / ${rec.total}</small></div>
+      ${resultGrid(results)}
+      <div class="tip" style="text-align:left">📣 工作人員：請發放現場參加小禮物，並提醒同學回家可玩「在家模式」參加抽獎！</div>
+    </div>
+    <div id="sendState"></div>
+    <button class="btn glow" onclick="boothStart()">下一位</button>
+    <button class="btn sec" onclick="boothMenu()">回現場選單</button>
+  `);
+  countUp($("#scoreNum"), rec.score);
+}
+
+function redeemPage(){
+  render(`
+    <div class="card">
+      <h2>🎁 兌換碼核銷</h2>
+      <p class="muted">請輸入同學截圖上的兌換碼（可省略 MMU-）。</p>
+      <label for="r_code">兌換碼</label>
+      <input type="text" id="r_code" placeholder="MMU-XXXX" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')doRedeem()">
+      <button class="btn navy" id="r_btn" style="margin-top:12px" onclick="doRedeem()">核對並核銷</button>
+      <div id="r_res"></div>
+    </div>
+    <button class="btn sec" onclick="boothMenu()">回現場選單</button>
+  `);
+  setTimeout(() => { const i = $("#r_code"); if (i) i.focus(); }, 50);
+}
+async function doRedeem(){
+  const code = normCode($("#r_code").value), box = $("#r_res"), btn = $("#r_btn");
+  if (!code){ box.innerHTML = `<div class="rres ng">請輸入兌換碼</div>`; return; }
+  btn.classList.add("loading"); box.innerHTML = "";
+  try {
+    const r = await Api.redeem(S.pin, code);
+    if (!$("#r_res")) return;
+    const rec = r.rec || {};
+    if (r.status === "ok"){
+      box.innerHTML = `<div class="rres ok">
+        <svg class="check" viewBox="0 0 84 84" fill="none" stroke="#2f9e6e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="42" cy="42" r="36"/><path d="M26 43l11 11 22-23"/></svg>
+        <b class="big">核銷成功，請發放小禮物</b>
+        ${esc(code)}<br>${esc(rec.name)}｜${esc(rec.dept)}｜${esc(rec.sid)}<br>成績 ${esc(rec.score)} / ${esc(rec.total)}</div>`;
+      $("#r_code").value = "";
+    } else if (r.status === "used"){
+      box.innerHTML = `<div class="rres warn"><b class="big">⚠️ 此兌換碼已兌換過</b>${esc(code)}｜${esc(rec.name)}<br>兌換時間 ${fmtIso(rec.redeemedAt)}</div>`;
+    } else {
+      box.innerHTML = `<div class="rres ng"><b class="big">❌ 查無此兌換碼</b>${esc(code)}<br>請確認輸入是否正確</div>`;
+    }
+  } catch(e){
+    if (pinExpired(e)) return;
+    RETRY.redeem = doRedeem;
+    box.innerHTML = `<div style="margin-top:14px">${errorBox(netMsg(e), "redeem")}</div>`;
+  } finally {
+    const b = $("#r_btn"); if (b) b.classList.remove("loading");
+  }
+}
+
+async function boothStats(){
+  render(`<div class="card center"><h2>📊 活動數據</h2><p class="muted"><i class="spin" style="vertical-align:-3px"></i>　讀取中…</p></div>
+    <button class="btn sec" onclick="boothMenu()">回現場選單</button>`);
+  try {
+    const d = await Api.stats(S.pin);
+    const items = [["在家遊玩次數", d.homePlays], ["通過人次", d.passCount], ["不重複通過人數", d.uniquePass], ["已兌換數", d.redeemed], ["現場挑戰人次", d.boothPlays]];
+    render(`
+      <div class="card">
+        <h2>📊 活動數據${LOCAL ? "（本機）" : ""}</h2>
+        <div class="stats">${items.map(([k, v], i) => `<div class="stat" style="--i:${i}"><b data-n="${Number(v) || 0}">0</b><span>${k}</span></div>`).join("")}</div>
+      </div>
+      <div class="card plist">
+        <h2>通過名單（${(d.passList || []).length}）</h2>
+        ${(d.passList || []).length ? d.passList.map(r => `<p><b>${esc(r.code)}</b>｜${esc(r.name)}｜${esc(r.dept)}｜${esc(r.sid)}｜${esc(r.score)}/${esc(r.total)} ${r.redeemed ? `<span class="done">✅ 已兌換</span>` : ""}</p>`).join("") : `<p class="muted">尚無資料</p>`}
+      </div>
+      <button class="btn sec" onclick="boothStats()">重新整理</button>
+      <button class="btn sec" onclick="boothMenu()">回現場選單</button>
+    `);
+    $$(".stat b").forEach(el => countUp(el, Number(el.dataset.n)));
+  } catch(e){
+    if (pinExpired(e)) return;
+    RETRY.stats = boothStats;
+    render(`${errorBox(netMsg(e), "stats")}<button class="btn sec" onclick="boothMenu()">回現場選單</button>`);
+  }
+}
+
+/* 進入點 */
+MODE === "booth" ? boothMenu() : homeIntro();
+Outbox.flush();
+</script>
+</body>
+</html>

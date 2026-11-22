@@ -122,6 +122,13 @@
   .gift-item.top .qty{background:var(--green-600)}
   .gift-total{margin-top:14px;font-size:13px;color:var(--muted);text-align:center}
   .gift-total b{color:var(--green-600)}
+  .gift-booth{position:relative;margin-top:14px;padding:12px 14px 12px 14px;border-radius:14px;background:#fff6f4;border:1.5px dashed #f2a79f;display:flex;gap:10px;align-items:flex-start;transition:transform .35s var(--spring)}
+  .gift-booth:hover{transform:scale(1.02) rotate(-.5deg)}
+  .gift-booth .ltd{flex:none;background:var(--pop);color:#fff;font-weight:900;font-size:12px;letter-spacing:.08em;padding:3px 9px;border-radius:8px;margin-top:2px;box-shadow:0 3px 0 #b8423a;animation:ltd 2.4s ease-in-out infinite}
+  .gift-booth p{font-size:13px;line-height:1.6;color:var(--ink);margin:0}
+  .gift-booth p b{display:block;color:#c2443b;font-size:14px}
+  .gift-booth p b.em{display:inline;font-size:13px}
+  @keyframes ltd{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-8deg) scale(1.08)}84%{transform:rotate(6deg) scale(1.08)}92%{transform:rotate(0) scale(1)}}
 
   /* sections */
   section{padding:44px 0;position:relative}
@@ -198,13 +205,14 @@
 
   /* rules */
   .rules{margin-top:16px;max-width:720px}
-  .card{background:var(--white);border-radius:var(--r);padding:28px;box-shadow:var(--shadow)}
+  .card{background:var(--white);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
   .card h3{color:var(--blue-900);font-size:19px;margin-bottom:10px}
   .card ul{list-style:none}
-  .card li{padding:8px 10px 8px 34px;position:relative;margin:4px 0;font-size:14.5px;border-radius:12px;transition:background .25s,transform .3s var(--spring)}
+  .card li{padding:5px 10px 5px 30px;position:relative;margin:2px 0;font-size:14.5px;line-height:1.55;border-radius:10px;transition:background .25s,transform .3s var(--spring)}
   .card li:hover{background:var(--blue-50);transform:translateX(4px)}
-  .card li::before{content:"";position:absolute;left:12px;top:16px;width:10px;height:10px;border-radius:3px;background:var(--blue-500);transition:transform .4s var(--spring)}
+  .card li::before{content:"";position:absolute;left:11px;top:12px;width:9px;height:9px;border-radius:3px;background:var(--blue-500);transition:transform .4s var(--spring)}
   .card li:nth-child(even)::before{background:var(--green-500)}
+  @media(max-width:720px){.card{padding:12px 12px}.card li{font-size:14px;padding:4px 8px 4px 26px;margin:0}.card li::before{left:9px;top:11px;width:8px;height:8px}}
   .card li:hover::before{transform:rotate(45deg) scale(1.2)}
 
   /* faq */
@@ -215,6 +223,8 @@
   summary::-webkit-details-marker{display:none}
   summary::after{content:"+";flex:none;width:28px;height:28px;border-radius:9px;background:var(--green-50);color:var(--green-600);font-size:20px;line-height:28px;text-align:center;transition:transform .4s var(--spring),background .25s}
   details[open] summary::after{transform:rotate(135deg);background:var(--green-400);color:var(--blue-900)}
+  .faq-link{color:var(--blue-700);font-weight:700;text-decoration:underline;text-decoration-color:var(--green-400);text-decoration-thickness:2px;text-underline-offset:3px}
+  .faq-link:hover{color:var(--green-600)}
   details p{color:var(--muted);font-size:14.5px;margin-top:10px;animation:drop .35s ease-out}
 
   footer{position:relative;background:var(--blue-900);color:#bcd8ee;font-size:13.5px;padding:30px 0 26px;margin-top:0}
@@ -307,6 +317,10 @@
         <span class="qty">10 名</span>
       </div>
       <p class="gift-total">共 <b>20</b> 個名額，答對 80% 以上即可參加抽獎</p>
+      <div class="gift-booth">
+        <span class="ltd">限定</span>
+        <p><b>12/2（三）現場擺攤</b>完成有獎徵答取得兌換碼，可以再來攤位兌換<b class="em">實體限定小禮物</b>～</p>
+      </div>
     </aside>
   </div>
 </section>
@@ -433,7 +447,6 @@
       <div class="card">
         <ul>
           <li>活動期間內完成作答且答對 80% 以上者，即具抽獎資格</li>
-          <li>每人限參加一次，請填寫正確聯絡資料以便通知</li>
           <li>得獎名單將由圖書館公告，並以 Email 通知</li>
           <li>主辦單位保有活動修改及最終解釋之權利</li>
         </ul>
@@ -447,7 +460,7 @@
   <div class="wrap">
     <div class="eyebrow reveal">FAQ</div>
     <h2 class="reveal">常見問題</h2>
-    <details class="reveal"><summary>在校外可以使用 Health Library 嗎？</summary><p>可以，請依圖書館提供的校外連線方式（如 VPN 或代理伺服器）登入後再進入資料庫，詳情請洽圖書館。</p></details>
+    <details class="reveal"><summary>在校外可以使用 Health Library 嗎？</summary><p>請從<a class="faq-link" href="https://ermg.mmu.edu.tw/user/login/?next=/er/geter/DB000000284/" target="_blank" rel="noopener">圖書館電子資源管理系統</a>登入後即可使用資料庫。</p></details>
     <details class="reveal" style="--d:.08s"><summary>題目一定要用資料庫才能回答嗎？</summary><p>題目設計都可以在 Health Library 中找到答案，建議直接進資料庫搜尋，順便熟悉平台功能。</p></details>
   </div>
 </section>

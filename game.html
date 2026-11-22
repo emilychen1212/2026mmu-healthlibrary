@@ -50,6 +50,9 @@
   .hero.orange p{color:#effbe8}
   .steps{list-style:none;counter-reset:s}
   .steps li{counter-increment:s;padding:7px 0 7px 40px;position:relative;font-size:15px}
+  .steps li.hot{color:#d63a30;font-weight:900;animation:hop 1.8s ease-in-out infinite}
+  .steps li.hot::before{background:#d63a30;color:#fff}
+  @keyframes hop{0%,55%,100%{transform:translateY(0)}65%{transform:translateY(-4px)}75%{transform:translateY(0)}83%{transform:translateY(-2px)}}
   .steps li::before{content:counter(s);position:absolute;left:0;top:7px;width:28px;height:28px;border-radius:50%;background:var(--orange-soft);color:var(--orange-ink);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px}
 
   /* ---------- buttons: squash & bounce ---------- */
@@ -197,7 +200,7 @@
   @media (prefers-reduced-motion: reduce){
     .bgtile{animation:none!important}
     .screen,.shake,.qcard,.book,.book.bounce,.book.pulse,.book.reveal,.book.shake,.okpop,.tip,.rlist span,.medal,.stamp,.rres,.rres.warn,.errbox,.stat,.pnum .flip,.score.wobble{animation:fadeIn .2s ease backwards!important;animation-delay:0s!important}
-    .golink:not(.visited),.btn.glow:not(:disabled),.btn.nudge,.timer.bump{animation:none!important}
+    .golink:not(.visited),.btn.glow:not(:disabled),.btn.nudge,.timer.bump,.steps li.hot{animation:none!important}
     .bar i{transition:width .2s ease}
     .btn,.book{transition:background .2s,border-color .2s,opacity .2s}
     .btn:active:not(:disabled),.book:active:not(:disabled){transform:none}
@@ -428,7 +431,7 @@ function homeIntro(){
         <li>填寫基本資料</li>
         <li>每局隨機 ${CONFIG.HOME_COUNT} 張圖，點「前往原圖」找出它來自哪本書</li>
         <li>答對 ${Math.round(CONFIG.PASS_RATE * 100)}% 以上即獲抽獎資格＋兌換碼</li>
-        <li>截圖兌換碼，到圖書館擺攤現場換小禮物 🎁</li>
+        <li class="hot">📸 記得截圖兌換碼！12/2（三）現場擺攤可以前來兌換＋抽禮物 🎁</li>
       </ol>
       <p class="muted" style="margin-top:8px">💡 需在校內網路或透過圖書館 VPN 才能開啟原圖。沒過關可以無限重玩，每局題目都不同！</p>
     </div>
@@ -679,7 +682,7 @@ function homeResult(rec, results, passed){
         <div class="meta" style="margin-top:4px">Health Library 雲端挖寶樂</div>
       </div>
       <div id="codeErr"></div>
-      <div class="shot">📸 <b>請截圖此畫面！</b><br>到圖書館擺攤現場出示，即可兌換小禮物<br>（您也已獲得抽獎資格）</div>
+      <div class="shot">📸 <b>請截圖此畫面！</b><br>12/2（三）到圖書館擺攤現場出示，即可兌換小禮物<br>（您也已獲得抽獎資格）</div>
       <button class="btn sec" onclick="homeIntro()">回首頁</button>
     `);
     setTimeout(burst, 250);
